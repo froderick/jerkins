@@ -1,0 +1,4 @@
+TestIntent test
+AMAZON.StopIntent stop
+AMAZON.StopIntent cancel
+AMAZON.StopIntent thanks
