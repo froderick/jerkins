@@ -1,3 +1,6 @@
+/*
+	Here I'm experimenting with fetching calendar data.
+ */
 package main
 
 import (
@@ -5,21 +8,19 @@ import (
 	"io/ioutil"
 	"fmt"
 	"net/http"
-	"os"
 	"encoding/json"
+	"github.com/froderick/jerkins"
 )
+
 
 func main() {
 
-	tok := os.Getenv("TOKEN")
-
-    client := &http.Client{}
-
-	auth := "Bearer " + tok
-	fmt.Printf("%s\n", auth)
+    client, err := jerkins.Client()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	req, err := http.NewRequest("GET", "https://graph.microsoft.com/v1.0/me/events", nil)
-	req.Header.Add("Authorization", "Bearer " + tok)
 	res, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
@@ -28,11 +29,11 @@ func main() {
 	body, err := ioutil.ReadAll(res.Body)
 	fmt.Printf("%s\n", body)
 
-	foo := Events{}
-	json.Unmarshal(body, &foo)
+	events := Events{}
+	json.Unmarshal(body, &events)
 
 	fmt.Println("-------------------")
-	fmt.Printf("%+v\n", foo)
+	fmt.Printf("%+v\n", events)
 }
 
 type Event struct {

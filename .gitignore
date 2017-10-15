@@ -20,3 +20,5 @@ jerkins.iml
 projectFilesBackup/
 jerkins
 get.sh
+token.json
+cmd/calendars/data.json

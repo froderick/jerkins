@@ -31,7 +31,7 @@ run the skill server locally:
 ```
 cd $GOPATH/src/github.com/froderick/jerkins
 go get
-go build
+go build cmd/server/*
 ./jerkins
 ```
 

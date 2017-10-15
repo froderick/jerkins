@@ -1,34 +1,21 @@
 /*
-	Customized example copied from the oauth2 lib docs, useful for getting a new access token.
+	Useful for getting a token.json if you don't already have one.
 */
 
 package main
 
 import (
-	"context"
 	"golang.org/x/oauth2"
 	"log"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"github.com/froderick/jerkins"
+	"golang.org/x/net/context"
 )
 
 func main() {
 
-	clientId := os.Getenv("CLIENT_ID")
-	secret := os.Getenv("CLIENT_SECRET")
-
 	ctx := context.Background()
-	conf := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: secret,
-		Scopes:       []string{"Calendars.Read", "User.Read"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-		},
-		RedirectURL: "http://localhost:8081/example",
-	}
+	conf := jerkins.OAuthConfig()
 
 	// Redirect user to consent page to ask for permission
 	// for the scopes specified above.
@@ -51,12 +38,5 @@ func main() {
 		fmt.Printf("%s\n", tok.AccessToken)
 	}
 
-	client := conf.Client(ctx, tok)
-	resp, resperr := client.Get("https://graph.microsoft.com/v1.0/me/events/")
-	if resperr != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Printf("%s", body)
+	jerkins.SaveToken(tok)
 }
