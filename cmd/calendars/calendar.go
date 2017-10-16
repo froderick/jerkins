@@ -16,7 +16,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	events := jerkins.QueryEvents(client, "$select=subject,start,end,attendees&$orderby=start/dateTime&$filter=start/dateTime gt '2017-10-15'")
+	events, err := jerkins.QueryEvents(client,
+		"$select=subject,start,end,attendees&$orderby=start/dateTime&$filter=start/dateTime gt '2017-10-15'")
+
+	if err != nil {
+		fmt.Sprintf("failed to fetch data: %v", err)
+		return
+	}
 
 	for _, event := range events {
 		fmt.Printf("%+v : \"%+v\"\n", event.Start, event.Subject)

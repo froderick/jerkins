@@ -13,6 +13,7 @@ import (
 	"log"
 	"io/ioutil"
 	"net/url"
+	"time"
 )
 
 const (
@@ -200,17 +201,32 @@ type Attendee struct {
 }
 
 type EventSummary struct {
-	Start string
-	End string
+	Start time.Time
+	End time.Time
 	Attendees []Attendee
 	Subject string
 }
 
-func summarizeEvent(a event) EventSummary {
+const (
+	DateTimeFormat = "2006-01-02T15:04:05.0000000"
+)
+
+func summarizeEvent(a event) (EventSummary, error) {
 
 	b := EventSummary{}
-	b.Start = a.Start.DateTime
-	b.End = a.End.DateTime
+
+	start, err := time.Parse(DateTimeFormat, a.Start.DateTime)
+	if err != nil {
+		return b, fmt.Errorf("invalid time format for start: %s, %v", a.Start.DateTime, err)
+	}
+	b.Start = start
+
+	end, err := time.Parse(DateTimeFormat, a.End.DateTime)
+	if err != nil {
+		return b, fmt.Errorf("invalid time format for end: %s, %v", a.End.DateTime, err)
+	}
+	b.End = end
+
 	b.Subject = a.Subject
 	b.Attendees = []Attendee{}
 
@@ -222,12 +238,12 @@ func summarizeEvent(a event) EventSummary {
 		b.Attendees = append(b.Attendees, attendeeB)
 	}
 
-	return b
+	return b, nil
 }
 
 const (
-	GRAPH_BASE_URL = "https://graph.microsoft.com/"
-	EVENTS_API = GRAPH_BASE_URL + "v1.0/me/events/?"
+	GraphBaseUrl = "https://graph.microsoft.com/"
+	EventsApi    = GraphBaseUrl + "v1.0/me/events/?"
 )
 
 func QueryEventsPage(client *http.Client, url string) *events {
@@ -249,17 +265,21 @@ func QueryEventsPage(client *http.Client, url string) *events {
 	return &events
 }
 
-func QueryEvents(client *http.Client, query string) []EventSummary {
+func QueryEvents(client *http.Client, query string) ([]EventSummary, error) {
 	summaries := []EventSummary{}
 
-	nextUrl := EVENTS_API + url.PathEscape(query)
+	nextUrl := EventsApi + url.PathEscape(query)
 	for len(nextUrl) > 0 {
 		events := QueryEventsPage(client, nextUrl)
 		for _, event := range events.Value {
-			summaries = append(summaries, summarizeEvent(event))
+			e, err := summarizeEvent(event)
+			if err != nil {
+				return summaries, fmt.Errorf("failed to summarize: %v", err)
+			}
+			summaries = append(summaries, e)
 		}
 		nextUrl = events.Odata_nextLink
 	}
 
-	return summaries
+	return summaries, nil
 }
