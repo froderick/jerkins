@@ -6,11 +6,11 @@ here yet.
 ### feature brainstorm 
 
 #### MVP: What is my next meeting?
-- wire up local development environment for Alexa skill
-- figure out how to query next meeting with api
-- make Alexa answer next meeting with hardcoded access token
-- link Alexa account to office365 account with oauth, use it
-- hosting: host app build pipeline on ecs how keith is doing it
+[X] wire up local development environment for Alexa skill
+[X] figure out how to query next meeting with api, do it in go
+[ ] make Alexa answer next meeting with hardcoded access token
+[ ] link Alexa account to office365 account with oauth, use it
+[ ] hosting: host app build pipeline on ecs how keith is doing it
 
 #### Other Skill Features
 - _When is my next meeting?_
