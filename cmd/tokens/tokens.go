@@ -35,7 +35,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		fmt.Printf("%s\n", tok.AccessToken)
+		fmt.Printf("access-token: %s\n", tok.AccessToken)
+		fmt.Printf("refresh-token: %s\n", tok.RefreshToken)
 	}
 
 	jerkins.SaveToken(tok)
