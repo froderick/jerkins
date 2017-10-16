@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"time"
+	"strings"
 )
 
 const (
@@ -282,4 +283,22 @@ func QueryEvents(client *http.Client, query string) ([]EventSummary, error) {
 	}
 
 	return summaries, nil
+}
+
+func QueryAllFutureEvents(client *http.Client) ([]EventSummary, error) {
+	when := time.Now().Format(DateTimeFormat)
+	query := fmt.Sprintf("$select=subject,start,end,attendees&$orderby=start/dateTime&$filter=start/dateTime gt '%s'",
+		when)
+	return QueryEvents(client, query)
+}
+
+func ContainsAttendee(event EventSummary, name string) bool {
+	sub := strings.ToLower(name)
+	for _, a := range event.Attendees {
+		s := strings.ToLower(a.Email.Name)
+		if strings.Contains(s, sub) {
+			return true
+		}
+	}
+	return false
 }
