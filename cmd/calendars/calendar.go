@@ -26,6 +26,9 @@ func main() {
 	for _, event := range events {
 		if jerkins.ContainsAttendee(event, "jack") {
 			fmt.Printf("%+v : \"%+v\"\n", event.Start, event.Subject)
+			for _, at := range event.Attendees {
+				fmt.Printf("\t%s\n", at.Email.Address)
+			}
 		}
 	}
 }
